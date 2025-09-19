@@ -23,7 +23,7 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -34,7 +34,7 @@ export default function LoginPage() {
         toast.success('Welcome back!')
         router.push('/dashboard')
       }
-    } catch (error) {
+    } catch {
       toast.error('An unexpected error occurred')
     } finally {
       setIsLoading(false)
@@ -53,7 +53,7 @@ export default function LoginPage() {
       if (error) {
         toast.error(error.message)
       }
-    } catch (error) {
+    } catch {
       toast.error('An unexpected error occurred')
     }
   }
@@ -153,7 +153,7 @@ export default function LoginPage() {
           </Button>
         </CardContent>
         <CardFooter className="text-center text-sm text-muted-foreground">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/register" className="text-primary hover:underline">
             Sign up
           </Link>

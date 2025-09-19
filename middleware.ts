@@ -57,12 +57,37 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   // Protected routes
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+  const protectedPaths = [
+    '/dashboard',
+    '/composer', 
+    '/calendar',
+    '/analytics',
+    '/platforms',
+    '/team',
+    '/settings',
+    '/profile',
+    '/bio',
+    '/templates',
+    '/queue'
+  ]
+
+  const isProtectedPath = protectedPaths.some(path => 
+    request.nextUrl.pathname.startsWith(path)
+  )
+
+  // Auth routes (shouldn't be accessible when logged in)
+  const authPaths = ['/login', '/register', '/reset-password']
+  const isAuthPath = authPaths.some(path => 
+    request.nextUrl.pathname.startsWith(path)
+  )
+
+  // Redirect to login if accessing protected route without auth
+  if (isProtectedPath && !user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // Redirect to dashboard if logged in and trying to access auth pages
-  if (user && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/register')) {
+  // Redirect to dashboard if accessing auth routes while logged in
+  if (isAuthPath && user) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
