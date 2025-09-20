@@ -1,5 +1,36 @@
 # Social Media Scheduler SaaS - Project Documentation
 
+## CRITICAL DEPLOYMENT INSTRUCTIONS
+
+### VPS Resource Constraints
+**Server Specs:** 2 CPU cores, 1.9GB RAM
+**Important:** This application is deployed on a low-resource VPS. Always optimize for CPU and memory efficiency.
+
+### Production Deployment Commands
+```bash
+# Build for production (optimized for low resources)
+npm run build
+
+# Start with PM2 (resource-limited)
+pm2 start ecosystem.config.js
+
+# Monitor resources
+pm2 monit
+
+# Restart if needed
+pm2 restart social-media-scheduler
+
+# View logs
+pm2 logs
+```
+
+### Key Optimizations Required
+1. **Middleware:** Only run on specific auth routes, NOT on every request (causes high CPU)
+2. **Next.js Config:** Use `output: 'standalone'` for efficient deployment
+3. **Memory:** Limit Node.js heap size to 512MB
+4. **Processes:** Use single PM2 instance for 2-core VPS
+5. **Supabase Client:** Minimize client creation to reduce CPU overhead
+
 ## Project Overview
 **Name:** OmniPost (Working Title)
 **Type:** All-in-One Social Media Management SaaS

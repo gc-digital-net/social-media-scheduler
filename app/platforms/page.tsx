@@ -14,10 +14,7 @@ import {
   Linkedin,
   Youtube,
   Plus,
-  Check,
-  X,
   AlertCircle,
-  ExternalLink,
   RefreshCw,
   Settings,
   Trash2,
@@ -29,8 +26,6 @@ import {
   Building,
   Camera,
   Video,
-  FileText,
-  ShoppingBag,
 } from 'lucide-react'
 
 interface Platform {

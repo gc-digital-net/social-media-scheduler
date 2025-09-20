@@ -29,10 +29,6 @@ import {
   Clock,
   Image,
   Video,
-  Link2,
-  Hash,
-  AtSign,
-  MapPin,
   Sparkles,
   Send,
   Save,
@@ -43,22 +39,25 @@ import {
   Youtube,
   Plus,
   X,
-  ChevronDown,
-  Eye,
   Bold,
   Italic,
   List,
   Smile,
 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import { useRouter } from 'next/navigation'
 
 export default function ComposerPage() {
   const [content, setContent] = useState('')
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
   const [scheduleDate, setScheduleDate] = useState<Date>()
+  const [scheduleTime, setScheduleTime] = useState<string>('')
   const [hashtags, setHashtags] = useState<string[]>([])
   const [currentHashtag, setCurrentHashtag] = useState('')
   const [mediaFiles, setMediaFiles] = useState<File[]>([])
+  const [postType, setPostType] = useState<'now' | 'schedule' | 'draft'>('now')
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
   const platforms = [
     { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'bg-blue-600', charLimit: 63206 },
@@ -69,18 +68,18 @@ export default function ComposerPage() {
   ]
 
   const timeSlots = [
-    '09:00 AM',
-    '10:00 AM',
-    '11:00 AM',
-    '12:00 PM',
-    '01:00 PM',
-    '02:00 PM',
-    '03:00 PM',
-    '04:00 PM',
-    '05:00 PM',
-    '06:00 PM',
-    '07:00 PM',
-    '08:00 PM',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '13:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+    '19:00',
+    '20:00',
   ]
 
   const togglePlatform = (platformId: string) => {
@@ -120,6 +119,59 @@ export default function ComposerPage() {
       limit: platform.charLimit,
       percentage: (content.length / platform.charLimit) * 100
     }
+  }
+
+  const handlePublish = async () => {
+    if (!content || selectedPlatforms.length === 0) {
+      alert('Please add content and select at least one platform')
+      return
+    }
+
+    setLoading(true)
+    
+    try {
+      let scheduledFor = null
+      let status = 'draft'
+      
+      if (postType === 'now') {
+        status = 'published'
+        scheduledFor = new Date().toISOString()
+      } else if (postType === 'schedule' && scheduleDate && scheduleTime) {
+        status = 'scheduled'
+        const [hours, minutes] = scheduleTime.split(':')
+        const scheduledDate = new Date(scheduleDate)
+        scheduledDate.setHours(parseInt(hours), parseInt(minutes))
+        scheduledFor = scheduledDate.toISOString()
+      }
+      
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content,
+          platforms: selectedPlatforms,
+          scheduled_for: scheduledFor,
+          status,
+          hashtags,
+          media_urls: [] // TODO: Upload media files first
+        })
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to create post')
+      }
+      
+      router.push('/dashboard')
+    } catch (error) {
+      console.error('Error creating post:', error)
+      alert('Failed to create post. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSaveDraft = async () => {
+    await handlePublish()
   }
 
   return (
@@ -330,7 +382,8 @@ export default function ComposerPage() {
                       type="radio"
                       name="schedule"
                       value="now"
-                      defaultChecked
+                      checked={postType === 'now'}
+                      onChange={() => setPostType('now')}
                       className="text-blue-600"
                     />
                     <span className="text-sm font-medium">Publish now</span>
@@ -340,6 +393,8 @@ export default function ComposerPage() {
                       type="radio"
                       name="schedule"
                       value="schedule"
+                      checked={postType === 'schedule'}
+                      onChange={() => setPostType('schedule')}
                       className="text-blue-600"
                     />
                     <span className="text-sm font-medium">Schedule for later</span>
@@ -349,6 +404,8 @@ export default function ComposerPage() {
                       type="radio"
                       name="schedule"
                       value="draft"
+                      checked={postType === 'draft'}
+                      onChange={() => setPostType('draft')}
                       className="text-blue-600"
                     />
                     <span className="text-sm font-medium">Save as draft</span>
@@ -380,7 +437,7 @@ export default function ComposerPage() {
 
                 <div className="space-y-3">
                   <Label>Time</Label>
-                  <Select>
+                  <Select value={scheduleTime} onValueChange={setScheduleTime}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select time" />
                     </SelectTrigger>
@@ -482,11 +539,19 @@ export default function ComposerPage() {
 
             {/* Actions */}
             <div className="flex gap-3">
-              <Button className="flex-1">
+              <Button 
+                className="flex-1" 
+                onClick={handlePublish}
+                disabled={loading || !content || selectedPlatforms.length === 0}
+              >
                 <Send className="h-4 w-4 mr-2" />
-                Publish
+                {loading ? 'Publishing...' : 'Publish'}
               </Button>
-              <Button variant="outline">
+              <Button 
+                variant="outline"
+                onClick={handleSaveDraft}
+                disabled={loading}
+              >
                 <Save className="h-4 w-4 mr-2" />
                 Save Draft
               </Button>

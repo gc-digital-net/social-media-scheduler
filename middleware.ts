@@ -2,6 +2,20 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Only check auth on protected routes
+  const path = request.nextUrl.pathname
+  
+  const protectedPaths = ['/dashboard', '/composer', '/calendar', '/analytics', '/platforms', '/team', '/settings']
+  const isProtectedPath = protectedPaths.some(p => path.startsWith(p))
+  
+  const authPaths = ['/login', '/register'] 
+  const isAuthPath = authPaths.some(p => path.startsWith(p))
+  
+  // Skip middleware for non-protected routes
+  if (!isProtectedPath && !isAuthPath) {
+    return NextResponse.next()
+  }
+  
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -56,31 +70,6 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Protected routes
-  const protectedPaths = [
-    '/dashboard',
-    '/composer', 
-    '/calendar',
-    '/analytics',
-    '/platforms',
-    '/team',
-    '/settings',
-    '/profile',
-    '/bio',
-    '/templates',
-    '/queue'
-  ]
-
-  const isProtectedPath = protectedPaths.some(path => 
-    request.nextUrl.pathname.startsWith(path)
-  )
-
-  // Auth routes (shouldn't be accessible when logged in)
-  const authPaths = ['/login', '/register', '/reset-password']
-  const isAuthPath = authPaths.some(path => 
-    request.nextUrl.pathname.startsWith(path)
-  )
-
   // Redirect to login if accessing protected route without auth
   if (isProtectedPath && !user) {
     return NextResponse.redirect(new URL('/login', request.url))
@@ -96,6 +85,19 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Only run middleware on specific routes that need auth
+    '/dashboard/:path*',
+    '/composer/:path*',
+    '/calendar/:path*',
+    '/analytics/:path*',
+    '/platforms/:path*',
+    '/team/:path*',
+    '/settings/:path*',
+    '/profile/:path*',
+    '/bio/:path*',
+    '/templates/:path*',
+    '/queue/:path*',
+    '/login',
+    '/register',
   ],
 }

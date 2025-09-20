@@ -35,7 +35,7 @@ export default function RegisterPage() {
     setIsLoading(true)
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -49,7 +49,7 @@ export default function RegisterPage() {
         toast.success('Account created! Please check your email to verify your account.')
         router.push('/login')
       }
-    } catch (error) {
+    } catch {
       toast.error('An unexpected error occurred')
     } finally {
       setIsLoading(false)
@@ -68,7 +68,7 @@ export default function RegisterPage() {
       if (error) {
         toast.error(error.message)
       }
-    } catch (error) {
+    } catch {
       toast.error('An unexpected error occurred')
     }
   }

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Calendar, Users, BarChart3, Zap, Globe, Shield, Clock, TrendingUp } from 'lucide-react'
+import { Calendar, Users, BarChart3, Zap, Globe } from 'lucide-react'
 
 export default function HomePage() {
   return (
