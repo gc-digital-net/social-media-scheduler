@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.optimized
+      args:
+        - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+        - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+    
+    # Resource limits for 2-core, 1.9GB VPS
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'          # Use max 1 CPU core
+          memory: 800M         # Limit to 800MB RAM
+        reservations:
+          cpus: '0.5'          # Reserve 0.5 CPU
+          memory: 400M         # Reserve 400MB RAM
+    
+    # Container configuration
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Port mapping
+    ports:
+      - "3000:3000"
+    
+    # Environment variables
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Node.js memory optimization
+      - NODE_OPTIONS=--max-old-space-size=512 --optimize-for-size
+      # Next.js telemetry
+      - NEXT_TELEMETRY_DISABLED=1
+    
+    # Volumes for logs
+    volumes:
+      - ./logs:/app/logs
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Network
+    networks:
+      - coolify
+
+networks:
+  coolify:
+    external: true

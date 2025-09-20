@@ -1,0 +1,89 @@
+# Multi-stage build optimized for Coolify deployment on low-resource VPS
+
+# Stage 1: Dependencies
+FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies with cache mount for faster builds
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --only=production && \
+    npm cache clean --force
+
+# Stage 2: Builder
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Build arguments
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ARG NEXT_PUBLIC_APP_URL
+
+# Set build-time environment variables
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL \
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY \
+    NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
+    NEXT_TELEMETRY_DISABLED=1 \
+    NODE_ENV=production
+
+# Build with memory limit
+ENV NODE_OPTIONS="--max-old-space-size=1024"
+
+# Build the application
+RUN npm run build
+
+# Remove dev dependencies and clean up
+RUN npm prune --production && \
+    rm -rf .next/cache
+
+# Stage 3: Runner (minimal production image)
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
+
+# Copy necessary files from builder
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Create logs directory with proper permissions
+RUN mkdir -p /app/logs && \
+    chown -R nextjs:nodejs /app/logs
+
+# Set production environment
+ENV NODE_ENV=production \
+    PORT=3000 \
+    HOSTNAME="0.0.0.0" \
+    NEXT_TELEMETRY_DISABLED=1
+
+# Memory optimization for runtime
+ENV NODE_OPTIONS="--max-old-space-size=512 --optimize-for-size --gc-interval=100"
+
+# Switch to non-root user
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the application
+CMD ["node", "server.js"]
