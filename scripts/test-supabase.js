@@ -8,7 +8,7 @@ const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config({ path: '.env.local' });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabasePublishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // Colors for console output
@@ -36,11 +36,11 @@ async function testSupabase() {
   }
   log('✅ NEXT_PUBLIC_SUPABASE_URL is set', 'green');
   
-  if (!supabaseAnonKey) {
-    log('❌ NEXT_PUBLIC_SUPABASE_ANON_KEY is not set', 'red');
+  if (!supabasePublishableKey) {
+    log('❌ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is not set', 'red');
     return false;
   }
-  log('✅ NEXT_PUBLIC_SUPABASE_ANON_KEY is set', 'green');
+  log('✅ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is set', 'green');
   
   if (!supabaseServiceKey) {
     log('⚠️  SUPABASE_SERVICE_ROLE_KEY is not set (optional for client-side)', 'yellow');
@@ -52,7 +52,7 @@ async function testSupabase() {
   log('\n2. Testing connection with anon key...', 'yellow');
   
   try {
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabase = createClient(supabaseUrl, supabasePublishableKey);
     
     // Try to fetch from a system table
     const { data, error } = await supabase
@@ -117,7 +117,7 @@ async function testSupabase() {
     'analytics',
   ];
   
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  const supabase = createClient(supabaseUrl, supabasePublishableKey);
   let tablesFound = 0;
   
   for (const table of requiredTables) {
