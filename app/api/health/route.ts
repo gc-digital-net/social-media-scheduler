@@ -20,7 +20,7 @@ export async function GET() {
     // Warning if memory usage is high
     if (healthCheck.memory.percentage > 80) {
       healthCheck.status = 'warning';
-      // @ts-ignore
+      // @ts-expect-error - Adding message property dynamically
       healthCheck.message = 'High memory usage detected';
     }
 
