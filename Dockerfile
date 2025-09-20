@@ -44,6 +44,8 @@ EXPOSE 3000
 # Set environment variables
 ENV PORT=3000
 ENV NODE_ENV=production
+# Memory optimization for low-resource VPS
+ENV NODE_OPTIONS="--max-old-space-size=512 --optimize-for-size"
 
 # Start the application
 CMD ["node", "server.js"]
