@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAccount } from '@/lib/contexts/account-context'
 import { AccountCard } from '@/components/account/account-card'
 import { AccountsOverview } from '@/components/account/accounts-overview'
+import { CreateAccountDialog } from '@/components/account/create-account-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -29,12 +30,13 @@ import { cn } from '@/lib/utils'
 type ViewMode = 'grid' | 'list' | 'comparison'
 
 export default function AccountsPage() {
-  const { accounts, accountGroups, loading } = useAccount()
+  const { accounts, accountGroups, loading, refreshAccounts } = useAccount()
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedGroup, setSelectedGroup] = useState<string>('all')
   const [sortBy, setSortBy] = useState<'name' | 'posts' | 'engagement'>('name')
   const [filteredAccounts, setFilteredAccounts] = useState(accounts)
+  const [showCreateDialog, setShowCreateDialog] = useState(false)
 
   // Filter accounts based on search and group
   useEffect(() => {
@@ -98,7 +100,10 @@ export default function AccountsPage() {
             Manage all your client accounts in one place
           </p>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700">
+        <Button 
+          className="bg-green-600 hover:bg-green-700"
+          onClick={() => setShowCreateDialog(true)}
+        >
           <Plus className="mr-2 h-4 w-4" />
           Add Client Account
         </Button>
@@ -202,6 +207,16 @@ export default function AccountsPage() {
           <AccountComparison accounts={filteredAccounts.slice(0, 4)} />
         </TabsContent>
       </Tabs>
+
+      {/* Create Account Dialog */}
+      <CreateAccountDialog 
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onAccountCreated={() => {
+          refreshAccounts()
+          setShowCreateDialog(false)
+        }}
+      />
     </div>
   )
 }

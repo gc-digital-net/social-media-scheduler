@@ -55,6 +55,7 @@ interface AccountContextType {
   
   // Account management
   loadAccounts: () => Promise<void>
+  refreshAccounts: () => Promise<void>
   createAccount: (account: Partial<ClientAccount>) => Promise<ClientAccount>
   updateAccount: (id: string, updates: Partial<ClientAccount>) => Promise<void>
   deleteAccount: (id: string) => Promise<void>
@@ -335,6 +336,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
     permissions,
     hasPermission,
     loadAccounts,
+    refreshAccounts: loadAccounts,
     createAccount,
     updateAccount,
     deleteAccount,
