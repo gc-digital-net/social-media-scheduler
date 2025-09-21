@@ -148,6 +148,8 @@ export function CreateAccountDialog({
         .eq('owner_id', user.id)
         .single()
 
+      let workspaceId: string
+      
       if (wsError || !workspace) {
         // Create workspace if doesn't exist
         const { data: newWorkspace, error: createWsError } = await supabase
@@ -161,14 +163,16 @@ export function CreateAccountDialog({
           .single()
 
         if (createWsError) throw createWsError
-        workspace.id = newWorkspace.id
+        workspaceId = newWorkspace.id
+      } else {
+        workspaceId = workspace.id
       }
 
       // Create client account
       const { data: clientAccount, error: accountError } = await supabase
         .from('client_accounts')
         .insert({
-          workspace_id: workspace.id,
+          workspace_id: workspaceId,
           name: accountData.name,
           industry: accountData.industry,
           website: accountData.website,
