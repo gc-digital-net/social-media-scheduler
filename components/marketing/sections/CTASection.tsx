@@ -6,11 +6,11 @@ export function CTASection() {
   return (
     <section className="py-32 relative overflow-hidden">
       {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 dark:from-gray-100 dark:via-gray-200 dark:to-gray-100" />
+      <div className="absolute inset-0 bg-gradient-to-br from-green-900 via-green-800 to-green-900 dark:from-green-950 dark:via-green-900 dark:to-green-950" />
       
       {/* Floating orbs */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-10 animate-float" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-10 animate-float" style={{ animationDelay: '3s' }} />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-10 animate-float" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-lime-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-10 animate-float" style={{ animationDelay: '3s' }} />
 
       <div className="relative mx-auto max-w-4xl px-6 lg:px-8 text-center">
         <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-white dark:text-gray-900">

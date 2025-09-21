@@ -11,9 +11,9 @@ export function HeroSection() {
       <div className="absolute inset-0 gradient-mesh opacity-30" />
       
       {/* Floating gradient orbs */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" />
-      <div className="absolute top-40 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }} />
-      <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '4s' }} />
+      <div className="absolute top-20 left-10 w-72 h-72 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" />
+      <div className="absolute top-40 right-10 w-72 h-72 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }} />
+      <div className="absolute -bottom-8 left-20 w-72 h-72 bg-lime-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '4s' }} />
 
       <div className="relative mx-auto max-w-7xl px-6 py-32 sm:py-40 lg:px-8">
         <div className="mx-auto max-w-3xl">
@@ -42,7 +42,7 @@ export function HeroSection() {
             <Link href="/register">
               <Button 
                 size="lg" 
-                className="bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:hover:bg-gray-200 dark:text-gray-900 text-white rounded-full px-8 py-6 text-base font-medium transition-all hover:scale-105"
+                className="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white rounded-full px-8 py-6 text-base font-medium transition-all hover:scale-105 shadow-lg shadow-green-500/25"
               >
                 Start free trial
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -52,7 +52,7 @@ export function HeroSection() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="rounded-full px-8 py-6 text-base font-medium border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
+                className="rounded-full px-8 py-6 text-base font-medium border-green-200 dark:border-green-800 hover:bg-green-50 dark:hover:bg-green-950 transition-all"
               >
                 Book a demo
               </Button>
