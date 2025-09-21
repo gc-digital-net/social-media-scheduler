@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
+import { AnimatedDashboardMockup } from '@/components/marketing/AnimatedDashboardMockup'
 
 export function HeroSection() {
   return (
@@ -78,19 +79,9 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Product preview - clean glass morphism card */}
+        {/* Animated Dashboard Mockup */}
         <div className="mt-24 relative">
-          <div className="glass rounded-2xl p-1 shadow-2xl">
-            <div className="rounded-xl bg-white dark:bg-gray-900 p-8">
-              <div className="aspect-[16/9] rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-2xl font-semibold text-gray-300 dark:text-gray-700">
-                    Dashboard Preview
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AnimatedDashboardMockup />
         </div>
       </div>
     </section>
