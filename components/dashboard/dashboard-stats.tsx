@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Calendar, Send, Eye, TrendingUp, Users, Heart, MessageCircle, Share2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 interface Stats {
   scheduledPosts: number;
@@ -26,20 +27,67 @@ export function DashboardStats() {
     totalComments: 0,
     totalShares: 0,
   })
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // TODO: Fetch real stats from API
-    // Mock data for now
-    setStats({
-      scheduledPosts: 12,
-      publishedToday: 3,
-      totalReach: 15420,
-      engagementRate: 4.2,
-      newFollowers: 127,
-      totalLikes: 892,
-      totalComments: 156,
-      totalShares: 43,
-    })
+    async function fetchStats() {
+      try {
+        const supabase = createClient()
+        
+        // Get user's workspace
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        // Fetch scheduled posts count
+        const { count: scheduledCount } = await supabase
+          .from('posts')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'scheduled')
+        
+        // Fetch today's published posts
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const { count: publishedToday } = await supabase
+          .from('posts')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'published')
+          .gte('published_at', today.toISOString())
+
+        // Fetch analytics data (if available)
+        const { data: analytics } = await supabase
+          .from('analytics')
+          .select('reach, likes, comments, shares')
+          .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+
+        // Calculate totals from analytics
+        const totalReach = analytics?.reduce((sum, a) => sum + (a.reach || 0), 0) || 0
+        const totalLikes = analytics?.reduce((sum, a) => sum + (a.likes || 0), 0) || 0
+        const totalComments = analytics?.reduce((sum, a) => sum + (a.comments || 0), 0) || 0
+        const totalShares = analytics?.reduce((sum, a) => sum + (a.shares || 0), 0) || 0
+
+        // Calculate engagement rate
+        const engagementRate = totalReach > 0 
+          ? ((totalLikes + totalComments + totalShares) / totalReach * 100).toFixed(1)
+          : 0
+
+        setStats({
+          scheduledPosts: scheduledCount || 0,
+          publishedToday: publishedToday || 0,
+          totalReach,
+          engagementRate: parseFloat(engagementRate as string),
+          newFollowers: 0, // This would need platform API integration
+          totalLikes,
+          totalComments,
+          totalShares,
+        })
+      } catch (error) {
+        console.error('Error fetching stats:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStats()
   }, [])
 
   const mainStats = [
