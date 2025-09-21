@@ -3,6 +3,7 @@ import { UserNav } from '@/components/layout/user-nav'
 import { MobileNav } from '@/components/layout/mobile-nav'
 import { AccountSwitcher } from '@/components/account/account-switcher'
 import { AccountProvider } from '@/lib/contexts/account-context'
+import { NotificationCenter } from '@/components/notifications/notification-center'
 
 export default function DashboardLayout({
   children,
@@ -32,6 +33,7 @@ export default function DashboardLayout({
               <AccountSwitcher />
             </div>
             <div className="ml-auto flex items-center gap-4">
+              <NotificationCenter />
               <UserNav />
             </div>
           </header>

@@ -13,7 +13,9 @@ import {
   Users,
   Sparkles,
   FileText,
-  HelpCircle
+  HelpCircle,
+  Building2,
+  Clock
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -25,14 +27,29 @@ const navItems = [
     icon: Home,
   },
   {
+    title: 'Accounts',
+    href: '/accounts',
+    icon: Building2,
+  },
+  {
     title: 'Compose',
     href: '/compose',
     icon: PenSquare,
   },
   {
+    title: 'Discover',
+    href: '/discover',
+    icon: Sparkles,
+  },
+  {
     title: 'Calendar',
     href: '/calendar',
     icon: Calendar,
+  },
+  {
+    title: 'Scheduling',
+    href: '/scheduling',
+    icon: Clock,
   },
   {
     title: 'Connections',
