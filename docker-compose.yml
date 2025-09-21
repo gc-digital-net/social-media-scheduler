@@ -10,15 +10,8 @@ services:
         - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
         - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
     
-    # Resource limits for 2-core, 1.9GB VPS
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'          # Use max 1 CPU core
-          memory: 800M         # Limit to 800MB RAM
-        reservations:
-          cpus: '0.5'          # Reserve 0.5 CPU
-          memory: 400M         # Reserve 400MB RAM
+    # Resource configuration removed - managed by Coolify
+    # Memory limits are set via environment variables instead
     
     # Container configuration
     restart: unless-stopped
