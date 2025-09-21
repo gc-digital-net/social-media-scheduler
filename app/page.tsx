@@ -14,12 +14,11 @@ export default function HomePage() {
     <div className="min-h-screen">
       <MarketingHeader />
       
-      <main>
+      {/* Add padding-top to account for fixed header */}
+      <main className="pt-16">
         <HeroSection />
-        <SocialProofSection />
         <FeaturesGrid />
         <StatsSection />
-        <PlatformsSection />
         <TestimonialsSection />
         <PricingPreview />
         <CTASection />

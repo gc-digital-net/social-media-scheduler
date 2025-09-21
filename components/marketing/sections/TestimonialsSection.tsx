@@ -1,69 +1,61 @@
-import { Card } from '@/components/ui/card'
-import { Star } from 'lucide-react'
-
 const testimonials = [
   {
     name: 'Sarah Johnson',
-    role: 'Marketing Director',
-    company: 'TechStartup Inc.',
-    image: '👩‍💼',
-    content: 'This platform has revolutionized our social media strategy. We&apos;ve seen a 300% increase in engagement since we started using it.',
-    rating: 5,
+    role: 'Marketing Director at TechCo',
+    content: 'This platform transformed how we handle social media. We&apos;ve seen a 3x increase in engagement since switching.',
+    avatar: 'SJ',
   },
   {
-    name: 'Mike Chen',
-    role: 'Social Media Manager',
-    company: 'Digital Agency',
-    image: '👨‍💻',
-    content: 'The AI content suggestions are incredible. It&apos;s like having a creative assistant that never runs out of ideas. Saves us hours every week.',
-    rating: 5,
+    name: 'Michael Chen',
+    role: 'Founder at StartupHub',
+    content: 'The AI assistant alone saves us 10+ hours per week. It&apos;s like having an extra team member who never sleeps.',
+    avatar: 'MC',
   },
   {
     name: 'Emily Rodriguez',
-    role: 'Founder',
-    company: 'E-commerce Brand',
-    image: '👩‍🚀',
-    content: 'Managing multiple platforms was a nightmare before. Now everything is streamlined and our posting consistency has improved dramatically.',
-    rating: 5,
+    role: 'Social Media Manager',
+    content: 'Finally, a tool that actually understands what modern social media teams need. The analytics are game-changing.',
+    avatar: 'ER',
   },
 ]
 
 export function TestimonialsSection() {
   return (
-    <section className="py-24 sm:py-32 bg-muted/20">
+    <section className="py-32 bg-gray-50/50 dark:bg-gray-900/50">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Loved by Marketers Worldwide
+        <div className="mx-auto max-w-2xl">
+          <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+            Loved by teams everywhere
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            See what our customers have to say about their experience
+          <p className="mt-6 text-lg text-gray-600 dark:text-gray-400">
+            Join thousands of teams already transforming their social media game.
           </p>
         </div>
 
-        <div className="mx-auto mt-16 grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="mx-auto mt-20 grid grid-cols-1 gap-8 lg:grid-cols-3">
           {testimonials.map((testimonial) => (
-            <Card key={testimonial.name} className="p-6">
-              <div className="flex gap-1 mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-yellow-500 text-yellow-500" />
-                ))}
-              </div>
-              
-              <blockquote className="text-muted-foreground mb-6">
+            <div
+              key={testimonial.name}
+              className="rounded-2xl border border-gray-200/50 dark:border-gray-800/50 bg-white/80 dark:bg-gray-900/80 p-8 backdrop-blur-sm"
+            >
+              <blockquote className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
                 &ldquo;{testimonial.content}&rdquo;
               </blockquote>
 
-              <div className="flex items-center gap-3">
-                <div className="text-3xl">{testimonial.image}</div>
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                  {testimonial.avatar}
+                </div>
                 <div>
-                  <div className="font-semibold">{testimonial.name}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {testimonial.role} at {testimonial.company}
+                  <div className="font-medium text-gray-900 dark:text-gray-100">
+                    {testimonial.name}
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-500">
+                    {testimonial.role}
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       </div>

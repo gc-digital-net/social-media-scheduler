@@ -1,38 +1,50 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { ArrowRight } from 'lucide-react'
 
 export function CTASection() {
   return (
-    <section className="py-24 sm:py-32 bg-gradient-to-r from-blue-600 to-purple-600">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Ready to Save Time and Grow Your Audience?
-          </h2>
-          <p className="mt-4 text-lg text-white/90">
-            Join thousands of businesses already using our platform to transform their social media presence.
-          </p>
+    <section className="py-32 relative overflow-hidden">
+      {/* Gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 dark:from-gray-100 dark:via-gray-200 dark:to-gray-100" />
+      
+      {/* Floating orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-10 animate-float" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-10 animate-float" style={{ animationDelay: '3s' }} />
 
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
-            />
-            <Link href="/register">
-              <Button size="lg" variant="secondary" className="w-full sm:w-auto">
-                Start Free Trial
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
+      <div className="relative mx-auto max-w-4xl px-6 lg:px-8 text-center">
+        <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-white dark:text-gray-900">
+          Ready to transform your social media?
+        </h2>
+        <p className="mt-6 text-lg text-gray-300 dark:text-gray-700 max-w-2xl mx-auto">
+          Join thousands of teams already using our platform to save time and grow their audience. 
+          Start your free trial today.
+        </p>
 
-          <p className="mt-4 text-sm text-white/70">
-            No credit card required • 14-day free trial • Cancel anytime
-          </p>
+        <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <Link href="/register">
+            <Button 
+              size="lg" 
+              className="bg-white hover:bg-gray-100 text-gray-900 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-white rounded-full px-8 py-6 text-base font-medium transition-all hover:scale-105"
+            >
+              Start free trial
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+          <Link href="/pricing">
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="border-white/20 hover:bg-white/10 text-white dark:border-gray-900/20 dark:hover:bg-gray-900/10 dark:text-gray-900 rounded-full px-8 py-6 text-base font-medium"
+            >
+              View pricing
+            </Button>
+          </Link>
         </div>
+
+        <p className="mt-8 text-sm text-gray-400 dark:text-gray-600">
+          No credit card required • 14-day free trial • Cancel anytime
+        </p>
       </div>
     </section>
   )
