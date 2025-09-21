@@ -210,7 +210,7 @@ export default function ConnectionsPage() {
                       <div className="flex items-center gap-2">
                         <p className="font-medium">{platform.name}</p>
                         {account.is_active ? (
-                          <Badge variant="success" className="text-xs">
+                          <Badge variant="default" className="text-xs bg-green-100 text-green-800">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             Active
                           </Badge>
