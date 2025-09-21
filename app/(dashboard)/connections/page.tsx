@@ -69,64 +69,66 @@ export default function ConnectionsPage() {
   const handleConnect = async (platform: Platform) => {
     setConnecting(platform)
     
-    // TODO: Implement OAuth flow for each platform
-    // For now, mock the connection
-    setTimeout(async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) return
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
 
-        // Get the current client account from context or URL params
-        // For now, we'll get the first client account
-        const { data: clientAccounts } = await supabase
-          .from('client_accounts')
-          .select('id')
-          .limit(1)
-          .single()
+      // Get the current client account from context or URL params
+      // For now, we'll get the first client account
+      const { data: clientAccounts } = await supabase
+        .from('client_accounts')
+        .select('id')
+        .limit(1)
+        .single()
 
-        if (!clientAccounts) {
-          toast.error('Please create a client account first')
-          setConnecting(null)
-          return
-        }
-
-        // Count existing accounts for this platform to create unique names
-        const existingCount = accountCountByPlatform[platform] || 0
-        const accountNumber = existingCount + 1
-
-        const mockAccount = {
-          client_account_id: clientAccounts.id,
-          platform,
-          account_name: accountNumber > 1 
-            ? `${PLATFORMS[platform].name} Account ${accountNumber}`
-            : `Main ${PLATFORMS[platform].name}`,
-          account_handle: `@${platform}_user${accountNumber > 1 ? accountNumber : ''}`,
-          is_active: true,
-          metadata: {
-            followers: Math.floor(Math.random() * 10000),
-            avatar: `https://ui-avatars.com/api/?name=${platform}${accountNumber}&background=random`,
-          }
-        }
-
-        const { data, error } = await supabase
-          .from('social_accounts')
-          .insert(mockAccount)
-          .select()
-          .single()
-
-        if (error) {
-          throw error
-        }
-
-        setAccounts([...accounts, data])
-        toast.success(`${PLATFORMS[platform].name} account ${accountNumber > 1 ? accountNumber : ''} connected successfully!`)
-      } catch (error) {
-        console.error('Error connecting account:', error)
-        toast.error(`Failed to connect ${PLATFORMS[platform].name}`)
-      } finally {
+      if (!clientAccounts) {
+        toast.error('Please create a client account first')
         setConnecting(null)
+        return
       }
-    }, 2000)
+
+      // Call the connect API to get OAuth URL
+      const response = await fetch('/api/auth/connect', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          platform,
+          client_account_id: clientAccounts.id
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to initiate OAuth connection')
+      }
+
+      const { authUrl } = await response.json()
+
+      // Open OAuth URL in new window
+      const authWindow = window.open(authUrl, '_blank', 'width=600,height=700')
+
+      // Poll for window closure
+      const pollTimer = setInterval(() => {
+        if (authWindow?.closed) {
+          clearInterval(pollTimer)
+          setConnecting(null)
+          // Refresh accounts after OAuth flow
+          fetchAccounts()
+        }
+      }, 1000)
+
+      // Set timeout to stop polling after 5 minutes
+      setTimeout(() => {
+        clearInterval(pollTimer)
+        setConnecting(null)
+      }, 5 * 60 * 1000)
+
+    } catch (error) {
+      console.error('Error connecting account:', error)
+      toast.error(`Failed to connect ${PLATFORMS[platform].name}`)
+      setConnecting(null)
+    }
   }
 
   const handleDisconnect = async (accountId: string, platform: Platform) => {

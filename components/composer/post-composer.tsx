@@ -7,13 +7,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Calendar, Clock, Image, Send, Save, Eye, Hash, Smile, Link, BarChart3, X } from 'lucide-react'
+import { Calendar, Clock, Image, Send, Save, Eye, Hash, Smile, Link, BarChart3, X, Sparkles } from 'lucide-react'
 import { PLATFORMS, Platform, getPlatformCharLimit } from '@/lib/constants/platforms'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { PlatformPreview } from './platform-preview'
 import { MediaUploader } from './media-uploader'
 import { DateTimePicker } from './date-time-picker'
+import { AIAssistant } from './ai-assistant'
 import { cn } from '@/lib/utils'
 
 interface PostComposerProps {
@@ -30,6 +31,7 @@ export function PostComposer({ defaultPlatforms = ['twitter'], onSave, onSchedul
   const [isScheduled, setIsScheduled] = useState(false)
   const [hashtags, setHashtags] = useState<string[]>([])
   const [currentHashtag, setCurrentHashtag] = useState('')
+  const [showAIAssistant, setShowAIAssistant] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const handlePlatformToggle = (platform: Platform) => {
@@ -183,7 +185,19 @@ export function PostComposer({ defaultPlatforms = ['twitter'], onSave, onSchedul
 
             {/* Content Input */}
             <div>
-              <Label htmlFor="content" className="text-base mb-3 block">Content</Label>
+              <div className="flex justify-between items-center mb-3">
+                <Label htmlFor="content" className="text-base">Content</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAIAssistant(!showAIAssistant)}
+                  className="gap-2"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  AI Assistant
+                </Button>
+              </div>
               <Textarea
                 ref={textareaRef}
                 id="content"
@@ -345,9 +359,20 @@ export function PostComposer({ defaultPlatforms = ['twitter'], onSave, onSchedul
         </Card>
       </div>
 
-      {/* Preview Panel */}
+      {/* Side Panel */}
       <div className="space-y-4">
-        <Card className="sticky top-4">
+        {/* AI Assistant Panel */}
+        {showAIAssistant && (
+          <AIAssistant
+            currentContent={content}
+            platform={selectedPlatforms[0] || 'twitter'}
+            onContentGenerated={(newContent) => setContent(newContent)}
+            onHashtagsGenerated={(newHashtags) => setHashtags([...hashtags, ...newHashtags.map(tag => `#${tag}`)])}
+          />
+        )}
+        
+        {/* Preview Panel */}
+        <Card className={showAIAssistant ? '' : 'sticky top-4'}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Eye className="h-4 w-4" />

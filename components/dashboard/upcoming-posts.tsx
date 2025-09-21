@@ -15,6 +15,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
 
 interface ScheduledPost {
   id: string;
@@ -31,45 +33,111 @@ export function UpcomingPosts() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // TODO: Fetch real posts from API
-    // Mock data for now
-    const mockPosts: ScheduledPost[] = [
-      {
-        id: '1',
-        content: 'Excited to share our latest product update! Check out the new features that will make your workflow even smoother.',
-        platforms: ['twitter', 'linkedin'],
-        scheduledFor: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
-        status: 'scheduled',
-        mediaCount: 2,
-      },
-      {
-        id: '2',
-        content: 'Behind the scenes of our team building event last week. Great memories with an amazing team!',
-        platforms: ['facebook', 'instagram'],
-        scheduledFor: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-        status: 'scheduled',
-        mediaCount: 5,
-      },
-      {
-        id: '3',
-        content: 'New blog post: "10 Tips for Better Social Media Engagement" - Learn how to boost your online presence.',
-        platforms: ['twitter', 'facebook', 'linkedin'],
-        scheduledFor: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
-        status: 'scheduled',
-        mediaCount: 1,
-      },
-    ]
-    setPosts(mockPosts)
-    setLoading(false)
+    const fetchPosts = async () => {
+      try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (user) {
+          // Fetch real posts from database
+          const { data: posts, error } = await supabase
+            .from('posts')
+            .select(`
+              id,
+              content,
+              scheduled_for,
+              status,
+              media_urls,
+              post_platforms!inner(
+                platform
+              )
+            `)
+            .eq('status', 'scheduled')
+            .gte('scheduled_for', new Date().toISOString())
+            .order('scheduled_for', { ascending: true })
+            .limit(10)
+
+          if (!error && posts) {
+            const transformedPosts: ScheduledPost[] = posts.map((post: any) => ({
+              id: post.id,
+              content: post.content || '',
+              platforms: post.post_platforms?.map((pp: any) => pp.platform) || [],
+              scheduledFor: new Date(post.scheduled_for),
+              status: post.status,
+              mediaCount: post.media_urls?.length || 0
+            }))
+            setPosts(transformedPosts)
+          } else {
+            // Use mock data as fallback
+            useMockData()
+          }
+        } else {
+          // Use mock data if not authenticated
+          useMockData()
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error)
+        useMockData()
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    const useMockData = () => {
+      const mockPosts: ScheduledPost[] = [
+        {
+          id: '1',
+          content: 'Excited to share our latest product update! Check out the new features that will make your workflow even smoother.',
+          platforms: ['twitter', 'linkedin'],
+          scheduledFor: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
+          status: 'scheduled',
+          mediaCount: 2,
+        },
+        {
+          id: '2',
+          content: 'Behind the scenes of our team building event last week. Great memories with an amazing team!',
+          platforms: ['facebook', 'instagram'],
+          scheduledFor: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
+          status: 'scheduled',
+          mediaCount: 5,
+        },
+        {
+          id: '3',
+          content: 'New blog post: "10 Tips for Better Social Media Engagement" - Learn how to boost your online presence.',
+          platforms: ['twitter', 'facebook', 'linkedin'],
+          scheduledFor: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
+          status: 'scheduled',
+          mediaCount: 1,
+        },
+      ]
+      setPosts(mockPosts)
+    }
+
+    fetchPosts()
   }, [])
 
   const handleEdit = (postId: string) => {
     router.push(`/compose?edit=${postId}`)
   }
 
-  const handleDelete = (postId: string) => {
-    // TODO: Implement delete
-    setPosts(posts.filter(p => p.id !== postId))
+  const handleDelete = async (postId: string) => {
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', postId)
+
+      if (error) {
+        toast.error('Failed to delete post')
+      } else {
+        setPosts(posts.filter(p => p.id !== postId))
+        toast.success('Post deleted successfully')
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error)
+      toast.error('Failed to delete post')
+    }
   }
 
   const handleReschedule = (postId: string) => {
