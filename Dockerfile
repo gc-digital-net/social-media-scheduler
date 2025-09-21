@@ -19,7 +19,8 @@ RUN npm ci
 # Copy source files
 COPY . .
 
-# Build the application
+# Build the application with memory limits
+ENV NODE_OPTIONS="--max-old-space-size=512"
 RUN npm run build
 
 # Production stage
