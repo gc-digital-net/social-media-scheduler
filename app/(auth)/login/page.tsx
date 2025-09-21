@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Calendar, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { getAppUrl } from '@/lib/utils/url'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -46,7 +47,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${getAppUrl()}/auth/callback`,
         },
       })
 
